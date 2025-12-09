@@ -1,0 +1,13 @@
+version: '5'
+services:
+  app_rrhh:
+    image: node
+    container_name: app_rrh
+    ports:
+      - 3000:3000
+    build: .
+    command: npm run dev
+  db:
+    image: postgres
+    container_name: rrhh_postgres
+    ports: 5432:5432
