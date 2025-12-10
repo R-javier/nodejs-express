@@ -1,14 +1,29 @@
+import { Pool } from "pg";
+ 
 
 import express from "express";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+const pool = new Pool({
+  host: "db",
+  port: 5432,
+  user: "admin",
+  password: "password",
+  database: "rrhh-db",
+});
+
 // Middleware para parsear JSON
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Mi respuesta desde express che");
+app.get("/", async(req, res) => {
+  try {
+    const data = await pool.query("SELECT * FROM empleados");
+    res.json(data.rows);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.get("/servicios", (req, res) => {
@@ -33,5 +48,6 @@ app.post("/saludo", (req, res) => {
 app.listen(port, () => {
   console.log("servidor activo en el puerto", port);
 });
+
 
 

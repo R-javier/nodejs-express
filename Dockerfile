@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar dependencias (solo producción)
-RUN npm install --omit=dev
+RUN npm install
 
 # Copiar el resto del código
 COPY . .

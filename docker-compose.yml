@@ -1,8 +1,8 @@
-version: '5'
+
 services:
   app_rrhh:
     image: node
-    container_name: app_rrh
+    container_name: app_rrhh
     ports:
       - 3000:3000
     build: .
@@ -10,4 +10,15 @@ services:
   db:
     image: postgres
     container_name: rrhh_postgres
-    ports: 5432:5432
+    ports: 
+    - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: rrhh-db
+    volumes:
+      - pg-data:/var/lib/postgresql
+
+volumes:
+  pg-data:
+    driver: local
