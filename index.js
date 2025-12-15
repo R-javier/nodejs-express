@@ -1,15 +1,19 @@
 import express from "express";
 import { Pool } from "pg";
+import 'dotenv/config'
+import { parse } from "dotenv";
+import { queries } from "./queries";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const pool = new Pool({
-  host: "db",
-  port: 5432,
-  user: "admin",
-  password: "password",
-  database: "rrhh-db",
+  host: process.env.DB_HOST,
+  port: parse.int(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 app.use(express.json());

@@ -9,10 +9,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Lockfiles (keep ONLY ONE depending on your team decision)
-# If you want to commit pnpm-lock.yaml, REMOVE this line
-# pnpm-lock.yaml
-
 # =========================
 # Environment variables
 # =========================
