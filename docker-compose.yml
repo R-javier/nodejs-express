@@ -1,7 +1,7 @@
 
 services:
   app_rrhh:
-    image: apijj:1.0
+    image: nodejsapi:1.0
     container_name: app_rrhh
     ports:
       - 3000:3000

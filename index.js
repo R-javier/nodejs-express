@@ -17,10 +17,9 @@ app.use(express.json());
 
 app.get("/employees", async (req, res, next) => {
   try {
-    const data = await pool.query(
-      process.env.SQL_EMPLOYEES_ALL || "SELECT * FROM empleados",
-    );
-    res.json(data.rows);
+    const sql = process.env.SQL_EMPLOYEES_ALL || "SELECT * FROM empleados";
+    const result = await pool.query(sql);
+    res.json(result.rows);
   } catch (error) {
     next(error);
   }
