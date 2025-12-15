@@ -14,19 +14,18 @@ const pool = new Pool({
 
 app.use(express.json());
 
-app.get("/employees", async (req, res) => {
+app.get("/employees", async (req, res, next) => {
   try {
     const data = await pool.query(
       process.env.SQL_EMPLOYEES_ALL || "SELECT * FROM empleados",
     );
     res.json(data.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.get("/employees/maxrole", async (req, res) => {
+app.get("/employees/maxrole", async (req, res, next) => {
   try {
     const sql =
       process.env.SQL_ROLES_MOST_STAFFED ||
@@ -44,12 +43,11 @@ app.get("/employees/maxrole", async (req, res) => {
     const maxrole = await pool.query(sql);
     res.json(maxrole.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.get("/employees/count/:dept", async (req, res) => {
+app.get("/employees/count/:dept", async (req, res, next) => {
   try {
     const deptId = Number(req.params.dept);
     if (!Number.isInteger(deptId)) {
@@ -62,12 +60,11 @@ app.get("/employees/count/:dept", async (req, res) => {
     const deptCountEmployees = await pool.query(sql, [deptId]);
     res.json(deptCountEmployees.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.get("/employees/:dept/:role", async (req, res) => {
+app.get("/employees/:dept/:role", async (req, res, next) => {
   try {
     const deptId = Number(req.params.dept);
     const roleId = Number(req.params.role);
@@ -83,12 +80,11 @@ app.get("/employees/:dept/:role", async (req, res) => {
     const deptRoleEmployees = await pool.query(sql, [deptId, roleId]);
     res.json(deptRoleEmployees.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.get("/employees/:dept", async (req, res) => {
+app.get("/employees/:dept", async (req, res, next) => {
   try {
     const deptId = Number(req.params.dept);
     if (!Number.isInteger(deptId)) {
@@ -100,12 +96,11 @@ app.get("/employees/:dept", async (req, res) => {
     const deptEmployees = await pool.query(sql, [deptId]);
     res.json(deptEmployees.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.put("/employees/:id/:role", async (req, res) => {
+app.put("/employees/:id/:role", async (req, res, next) => {
   try {
     const employeeId = Number(req.params.id);
     const roleId = Number(req.params.role);
@@ -138,12 +133,11 @@ app.put("/employees/:id/:role", async (req, res) => {
 
     res.json(deptmEmployees.rows);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
 });
 
-app.delete("/employees/:id", async (req, res) => {
+app.delete("/employees/:id", async (req, res, next) => {
   try {
     const employeeId = Number(req.params.id);
     if (!Number.isInteger(employeeId)) {
@@ -163,13 +157,21 @@ app.delete("/employees/:id", async (req, res) => {
       deleted: deleted.rows[0],
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    next(error);
   }
+});
+
+//Middleware central
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Ruta no encontrada" });
+});
+
+app.use((err, req, res, next) => {
+  console.error("[ERROR]", err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: "Error interno del servidor" });
 });
 
 app.listen(port, () => {
   console.log("servidor activo en el puerto", port);
 });
-
-//Middleware central
