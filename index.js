@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { Pool } from "pg";
 
@@ -5,11 +6,11 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const pool = new Pool({
-  host: "db",
-  port: 5432,
-  user: "admin",
-  password: "password",
-  database: "rrhh-db",
+  host: process.env.PGHOST || "db",
+  port: Number(process.env.PGPORT || 5432),
+  user: process.env.PGUSER || "admin",
+  password: process.env.PGPASSWORD || "password",
+  database: process.env.PGDATABASE || "rrhh-db",
 });
 
 app.use(express.json());
@@ -143,10 +144,12 @@ app.delete("/employees/:id", async (req, res, next) => {
     if (!Number.isInteger(employeeId)) {
       return res.status(400).json({ error: "Parámetro 'id' inválido" });
     }
-    const deleted = await pool.query(
-      "DELETE FROM empleados WHERE id = $1 RETURNING *",
-      [employeeId],
-    );
+
+    const sqlDelete =
+      process.env.SQL_EMPLOYEE_DELETE_BY_ID ||
+      "DELETE FROM empleados WHERE id = $1 RETURNING *";
+
+    const deleted = await pool.query(sqlDelete, [employeeId]);
 
     if (deleted.rowCount === 0) {
       return res.status(404).json({ error: "Empleado no encontrado" });
