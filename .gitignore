@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Coverage reports
+coverage/
+
+# Build artifacts
+dist/
+build/
+
+# Docker files and artifacts
+*.pid
+*.tar
+
+# Database dumps
+*.sql
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
