@@ -121,7 +121,7 @@ app.put("/employees/:id/:role", async (req, res) => {
     const employee = await pool.query(getSql, [employeeId]);
 
     if (employee.rowCount === 0) {
-      return res.json(404).json({ error: "Empleado no encontrado" });
+      return res.status(404).json({ error: "Empleado no encontrado" });
     }
 
     const updateSql =
@@ -171,3 +171,5 @@ app.delete("/employees/:id", async (req, res) => {
 app.listen(port, () => {
   console.log("servidor activo en el puerto", port);
 });
+
+//Middleware central
