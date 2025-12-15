@@ -1,7 +1,7 @@
 
 services:
   app_rrhh:
-    image: apijj:1.0
+    image: api-jj:julen_version
     container_name: app_rrhh
     ports:
       - 3000:3000
@@ -12,9 +12,27 @@ services:
       DB_PORT: 5432
       DB_USER: admin
       DB_PASSWORD: password
-      DB_NAME: rrhh-db=value
+      DB_NAME: rrhh-db
       PORT : 3000
       NODE_ENV : development
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules/
+
+        - action: sync
+          path: ./index.js
+          target: /app/index.js
+        
+        - action: sync
+          path: ./queries.js
+          target: /app/queries.js
+        
+        - action: rebuild
+          path: ./package.json 
     depends_on:
       - db
   db:
