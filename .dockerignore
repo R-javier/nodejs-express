@@ -9,3 +9,7 @@ docker-compose.yml
 .vscode
 coverage
 dist
+
+.env
+.env.local
+.env.*.local

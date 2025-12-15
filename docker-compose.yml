@@ -7,6 +7,16 @@ services:
       - 3000:3000
     build: .
     command: npm run dev
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: password
+      DB_NAME: rrhh-db=value
+      PORT : 3000
+      NODE_ENV : development
+    depends_on:
+      - db
   db:
     image: postgres
     container_name: rrhh_postgres
