@@ -13,8 +13,7 @@ services:
       DB_USER: admin
       DB_PASSWORD: password
       DB_NAME: rrhh-db
-      PORT : 3000
-      NODE_ENV : development
+      PORT: 3000
     develop:
       watch:
         - action: sync
@@ -46,8 +45,20 @@ services:
       POSTGRES_DB: rrhh-db
     volumes:
       - pg-data:/var/lib/postgresql
-
+  test-db:
+    image: postgres
+    container_name: test_postgres
+    ports: 
+    - 5430:5432
+    environment:
+      POSTGRES_USER: testadmin
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: test-db
+    volumes:
+      - test-data:/var/lib/postgresql
 volumes:
-  pg-data:
+  pg-data:  
+    driver: local
+  test-data:
     driver: local
     
