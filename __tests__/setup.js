@@ -1,16 +1,17 @@
-require("dotenv").config();
+import { config } from "dotenv";
+import pool from "../src/config/database.js";
 
-const pool = require("../src/config/database");
+config();
 
-beforeAll(async () => {
+before(async () => {
   if (process.env.NODE_ENV !== "test") {
     throw new Error("Debes correr tests con NODE_ENV=test");
   }
-  console.log("✅ Conectado a DB de test");
+  console.log("Conectado a DB de test");
 });
 
-afterAll(async () => {
+after(async () => {
   await pool.end();
 });
 
-global.db = pool;
+export { pool };

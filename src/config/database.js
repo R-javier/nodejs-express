@@ -2,7 +2,7 @@ import { Pool } from "pg";
 
 const isTest = process.env.NODE_ENV === "test";
 
-const pool = new Pool({
+export const pool = new Pool({
   host: isTest ? process.env.TEST_DB_HOST : process.env.DB_HOST,
   port: isTest
     ? parseInt(process.env.TEST_DB_PORT)
