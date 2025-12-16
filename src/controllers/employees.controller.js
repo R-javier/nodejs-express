@@ -1,9 +1,11 @@
 import {
-  getEmployeesCountByDept,
-  getMaxRole,
+  changeEmployeeRole as changeEmployeeRoleService,
+  getEmployeesCountByDept as getEmployeesCountByDeptService,
+  getMaxRole as getMaxRoleService,
   listEmployees,
   listEmployeesByDept,
   listEmployeesByDeptAndRole,
+  removeEmployee as removeEmployeeService,
 } from "../services/employees.service.js";
 
 export const getEmployees = async (req, res, next) => {
@@ -15,27 +17,32 @@ export const getEmployees = async (req, res, next) => {
   }
 };
 
-export const getEmployeesMaxRole = async (req, res, next) => {
+export const getMaxRole = async (req, res, next) => {
   try {
-    const data = await getMaxRole();
+    const data = await getMaxRoleService();
     res.json(data);
   } catch (error) {
     next(error);
   }
 };
 
-export const getEmployeesCount = async (req, res, next) => {
+export const getEmployeesCountByDept = async (req, res) => {
   try {
-    const deptId = Number(req.params.dept);
+    const { dept } = req.params;
 
-    if (!Number.isInteger(deptId)) {
-      return res.status(400).json({ error: "Parámetro 'dept' inválido" });
-    }
+    const { rows } = await pool.query(
+      `
+      SELECT COUNT(*)::int AS total
+      FROM empleados e
+      JOIN departamentos d ON e.departamento_id = d.id
+      WHERE d.nombre = $1
+      `,
+      [dept],
+    );
 
-    const data = await getEmployeesCountByDept(deptId);
-    res.json(data);
+    res.json(rows[0]);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -72,7 +79,7 @@ export const getEmployeesByDept = async (req, res, next) => {
   }
 };
 
-export const updateEmployeeRole = async (req, res, next) => {
+export const changeEmployeeRole = async (req, res, next) => {
   try {
     const employeeId = Number(req.params.id);
     const roleId = Number(req.params.role);
@@ -83,16 +90,14 @@ export const updateEmployeeRole = async (req, res, next) => {
         .json({ error: "Parámetros 'id' o 'role' inválidos" });
     }
 
-    const data = await changeEmployeeRole(employeeId, roleId);
+    const data = await changeEmployeeRoleService(employeeId, roleId);
     res.json(data);
   } catch (error) {
     next(error);
   }
 };
 
-import { removeEmployee } from "../services/employees.service.js";
-
-export const deleteEmployee = async (req, res, next) => {
+export const removeEmployee = async (req, res, next) => {
   try {
     const employeeId = Number(req.params.id);
 
@@ -100,7 +105,7 @@ export const deleteEmployee = async (req, res, next) => {
       return res.status(400).json({ error: "Parámetro 'id' inválido" });
     }
 
-    const deleted = await removeEmployee(employeeId);
+    const deleted = await removeEmployeeService(employeeId);
 
     res.json({
       message: "Empleado eliminado correctamente",

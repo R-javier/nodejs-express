@@ -1,4 +1,4 @@
-import { pool } from "../commons/db.js";
+import { pool } from "../../commons/db.js";
 
 export const getAllEmployees = async () => {
   const sql = process.env.SQL_EMPLOYEES_ALL || "SELECT * FROM empleados";

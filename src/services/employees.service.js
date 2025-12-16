@@ -6,7 +6,8 @@ import {
   getEmployeesByDeptAndRole,
   getRoleWithMostEmployees,
   updateEmployeeRole,
-} from "../repositories/employees.repository.js";
+} from "../repositories/sql/employees.repository.js";
+
 export const listEmployees = async () => {
   const result = await getAllEmployees();
   return result.rows;
@@ -49,7 +50,7 @@ export const changeEmployeeRole = async (employeeId, roleId) => {
   return deptEmployees.rows;
 };
 
-import { deleteEmployeeById } from "../repositories/employees.repository.js";
+import { deleteEmployeeById } from "../repositories/sql/employees.repository.js";
 
 export const removeEmployee = async (employeeId) => {
   const deleted = await deleteEmployeeById(employeeId);

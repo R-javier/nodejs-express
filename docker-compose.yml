@@ -1,27 +1,26 @@
-
 services:
   app_rrhh:
-    image: nodejsapi:1.0
     container_name: app_rrhh
-    ports:
-      - 3000:3000
     build: .
+    ports:
+      - "3000:3000"
     env_file:
       - .env
+    depends_on:
+      - postgres
     command: npm run dev
-  db:
-    image: postgres
+
+  postgres:
+    image: postgres:15
     container_name: rrhh_postgres
-    ports: 
-    - 5432:5432
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       POSTGRES_DB: rrhh-db
+    ports:
+      - "5432:5432"
     volumes:
       - pg-data:/var/lib/postgresql/data
 
 volumes:
   pg-data:
-    driver: local
-    
