@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { validate as isUuid } from "uuid";
 
 const employee = require("src/domain/employees.js");
 
@@ -13,6 +14,7 @@ describe("employee domain model", () => {
         "Marketing",
       );
 
+      expect(isUuid(test_employee.id)).to.be.true;
       expect(test_employee.name).to.equal("Juan");
       expect(test_employee.last_name).to.equal("Garcia");
       expect(test_employee.birthday).to.equal("1998-06-18");
