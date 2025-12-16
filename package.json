@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "NODE_ENV=test mocha '__tests__/**/*.test.js' --exit",
-    "test:watch": "NODE_ENV=test mocha '__tests__/**/*.test.js' --watch"
+    "test": "NODE_ENV=test mocha",
+    "test:watch": "NODE_ENV=test mocha --watch"
   },
   "keywords": [
     "node",

@@ -1,14 +1,13 @@
 import { expect } from "chai";
+import EmployeeRepository from "../../src/repositories/employees-repository.js";
 import { pool } from "../setup";
-
-const employeeRepository = require("src/repositories/employees-repository.js");
 
 describe("Employee repository", () => {
   let repository;
   let employeeData;
   const id = uuidv4();
   before(() => {
-    repository = new employeeRepository(pool);
+    repository = new EmployeeRepository(pool);
     employeeData = {
       id: id,
       name: "Mariana",

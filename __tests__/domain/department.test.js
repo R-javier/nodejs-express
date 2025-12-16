@@ -1,13 +1,12 @@
 import { expect } from "chai";
 import { validate as isUuid } from "uuid";
-
-const department = require("src/domain/department.js");
+import Department from "../../src/domain/department.js";
 
 describe("department domain model", () => {
   describe("constructor", () => {
-    test("should create a new department", () => {
-      const test_department = new department("PMO");
-      
+    it("should create a new department", () => {
+      const test_department = new Department("PMO");
+
       expect(isUuid(test_department.id)).to.be.true;
       expect(test_department.name).to.equal("PMO");
     });
