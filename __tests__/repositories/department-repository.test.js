@@ -3,23 +3,17 @@ import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
 import DepartmentRepository from "../../src/repositories/department-repository.js";
 
-describe("D repository", () => {
+describe("Department repository", () => {
   let repository;
-  let employeeData;
+  let departmentData;
   let id;
 
   before(() => {
     id = uuidv4();
-    repository = new EmployeeRepository(pool);
-    employeeData = {
+    repository = new DepartmentRepository(pool);
+    departmentData = {
       id: id,
-      name: "Mariana",
-      lastName: "Perez",
-      birthday: new Date(
-        Date.now() - Math.floor(Math.random() * 50 * 365 * 24 * 60 * 60 * 1000),
-      ),
-      role: "Desarrollador",
-      department: "Operaciones",
+      name: "Quality Assurance",
     };
   });
 
@@ -28,52 +22,34 @@ describe("D repository", () => {
   });
 
   describe("create", () => {
-    it("should create a new employee", async () => {
-      const employee = await repository.create(employeeData);
-      expect(employee).to.exist;
+    it("should create a new department", async () => {
+      const department = await repository.create(departmentData);
+      expect(department).to.exist;
     });
   });
 
   describe("find by Id", () => {
-    it("should find an employee by id", async () => {
-      await repository.create(employeeData);
-      const foundEmployee = await repository.findById(id);
-      expect(foundEmployee).to.exist;
+    it("should find a department by id", async () => {
+      await repository.create(departmentData);
+      const foundDepartment = await repository.findById(id);
+      expect(foundDepartment).to.exist;
     });
   });
 
-  describe("get all employees", () => {
-    it("should return all employees", async () => {
-      const employees = await repository.getAll();
-      expect(employees).to.exist;
-    });
-  });
-
-  describe("update", () => {
-    it("should update an existing employee", async () => {
-      await repository.create(employeeData);
-
-      await repository.update(id, {
-        name: "Marcela",
-        lastName: "Paez",
-        role: "Recursos Humanos",
-        department: "Operaciones",
-      });
-      const updated = await repository.findById(id);
-      expect(updated.name).to.equal("Marcela");
-      expect(updated.lastName).to.equal("Paez");
-      expect(updated.role).to.equal("Recursos Humanos");
-      expect(updated.department).to.equal("Operaciones");
+  describe("get all departments", () => {
+    it("should return all departments", async () => {
+      const departments = await repository.getAll();
+      expect(departments).to.exist;
     });
   });
 
   describe("delete", () => {
-    it("should delete the given employee", async () => {
-      await repository.create(employeeData);
+    it("should delete the given department", async () => {
+      await repository.create(departmentData);
 
       await repository.delete(id);
-      const foundEmployee = await repository.findById(id);
-      expect(foundEmployee).to.be.null;
+      const foundDepartment = await repository.findById(id);
+      expect(foundDepartment).to.be.null;
     });
   });
 });
