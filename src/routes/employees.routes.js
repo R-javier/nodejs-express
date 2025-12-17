@@ -1,20 +1,23 @@
 import { Router } from "express";
 import {
+  changeEmployeeRole,
   getEmployees,
   getEmployeesByDept,
   getEmployeesByDeptAndRole,
   getEmployeesCountByDept,
-  getMostStaffedRole,
+  getMaxRole,
+  removeEmployee,
 } from "../controllers/employees.controller.js";
 
 const router = Router();
 
-router.get("/employees/maxrole", getMostStaffedRole);
-router.get("/employees/count/:dept", getEmployeesCountByDept);
+router.get("/", getEmployees);
+router.get("/max-role", getMaxRole);
+router.get("/count/:dept", getEmployeesCountByDept);
+router.get("/:dept/:role", getEmployeesByDeptAndRole);
+router.get("/:dept", getEmployeesByDept);
 
-router.get("/employees/:dept/:role", getEmployeesByDeptAndRole);
-router.get("/employees/:dept", getEmployeesByDept);
-
-router.get("/employees", getEmployees);
+router.put("/:id/role/:role", changeEmployeeRole);
+router.delete("/:id", removeEmployee);
 
 export default router;

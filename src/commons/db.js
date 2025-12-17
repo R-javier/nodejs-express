@@ -3,7 +3,7 @@ import { env } from "./env.js";
 
 const { Pool } = pkg;
 
-console.log("🟢 PGHOST =", env.PGHOST);
+console.log("PGHOST =", env.PGHOST);
 
 export const pool = new Pool({
   host: env.PGHOST,

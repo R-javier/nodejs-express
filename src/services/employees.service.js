@@ -1,65 +1,98 @@
 import {
   countEmployeesByDept,
+  deleteEmployeeById,
   getAllEmployees,
-  getEmployeeById,
+  getDeptByName,
   getEmployeesByDept,
-  getEmployeesByDeptAndRole,
+  getEmployeesByDeptAndRoleFlexible,
+  getRoleIdByName,
   getRoleWithMostEmployees,
   updateEmployeeRole,
 } from "../repositories/sql/employees.repository.js";
 
+// LISTAR TODOS
 export const listEmployees = async () => {
   const result = await getAllEmployees();
   return result.rows;
 };
 
+// ROL CON MÁS EMPLEADOS
 export const getMaxRole = async () => {
-  const maxrole = await getRoleWithMostEmployees();
-  return maxrole.rows;
+  const result = await getRoleWithMostEmployees();
+  return result.rows[0] || null;
 };
 
-export const getEmployeesCountByDept = async () => {
-  const deptCountEmployees = await countEmployeesByDept(deptId);
-  return deptCountEmployees.rows;
+export const getEmployeesCountByDept = async (deptParam) => {
+  const clean = (deptParam || "").trim();
+  if (!clean) {
+    const err = new Error("Parámetro 'dept' inválido (vacío)");
+    err.status = 400;
+    throw err;
+  }
+  const result = await countEmployeesByDept(clean);
+  return result.rows[0];
 };
 
-export const listEmployeesByDeptAndRole = async () => {
-  const deptRoleEmployees = await getEmployeesByDeptAndRole(deptId, roleId);
-  return deptRoleEmployees.rows;
-};
-
-export const listEmployeesByDept = async (deptId) => {
-  const deptEmployees = await getEmployeesByDept(deptId);
-  return deptEmployees.rows;
-};
-
-export const changeEmployeeRole = async (employeeId, roleId) => {
-  const employee = await getEmployeeById(employeeId);
-
-  if (employee.rowCount === 0) {
-    const error = new Error("Empleado no encontrado");
-    error.status = 404;
-    throw error;
+export const listEmployeesByDeptName = async (deptName) => {
+  const clean = (deptName || "").trim();
+  if (!clean) {
+    const err = new Error("Parámetro 'dept' inválido");
+    err.status = 400;
+    throw err;
   }
 
-  await updateEmployeeRole(roleId, employeeId);
+  const deptResult = await getDeptByName(clean);
+  if (deptResult.rowCount === 0) {
+    const err = new Error(`Departamento no existe: ${clean}`);
+    err.status = 404;
+    throw err;
+  }
 
-  const deptId = employee.rows[0].departamento_id;
-  const deptEmployees = await getEmployeesByDept(deptId);
-
-  return deptEmployees.rows;
+  const deptId = deptResult.rows[0].id;
+  const employees = await getEmployeesByDept(deptId);
+  return employees.rows;
 };
 
-import { deleteEmployeeById } from "../repositories/sql/employees.repository.js";
+export const listEmployeesByDeptAndRole = async (deptKey, roleKey) => {
+  const result = await getEmployeesByDeptAndRoleFlexible(deptKey, roleKey);
+  return result.rows;
+};
 
-export const removeEmployee = async (employeeId) => {
+export const changeEmployeeRoleService = async (employeeId, roleKey) => {
+  let roleId;
+  const raw = (roleKey || "").trim();
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  if (uuidRegex.test(raw)) {
+    roleId = raw;
+  } else if (/^\d+$/.test(raw)) {
+    roleId = Number(raw);
+  } else {
+    roleId = await getRoleIdByName(raw);
+    if (!roleId) {
+      const err = new Error(`Rol no existe: ${raw}`);
+      err.status = 404;
+      throw err;
+    }
+  }
+
+  const updated = await updateEmployeeRole(roleId, employeeId);
+  if (updated.rowCount === 0) {
+    const err = new Error("Empleado no encontrado");
+    err.status = 404;
+    throw err;
+  }
+  return updated.rows[0];
+};
+
+export const removeEmployeeService = async (employeeId) => {
   const deleted = await deleteEmployeeById(employeeId);
-
   if (deleted.rowCount === 0) {
-    const error = new Error("Empleado no encontrado");
-    error.status = 404;
-    throw error;
+    const err = new Error("Empleado no encontrado");
+    err.status = 404;
+    throw err;
   }
-
   return deleted.rows[0];
 };
