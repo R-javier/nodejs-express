@@ -32,3 +32,5 @@ class DepartmentRepository {
     );
   }
 }
+
+export default DepartmentRepository;

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
 import DepartmentRepository from "../../src/repositories/department-repository.js";
 
-describe("Employee repository", () => {
+describe("D repository", () => {
   let repository;
   let employeeData;
   let id;

@@ -77,3 +77,5 @@ class EmployeeRepository {
     );
   }
 }
+
+export default EmployeeRepository;

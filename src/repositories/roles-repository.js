@@ -44,3 +44,5 @@ class RoleRepository {
     `);
   }
 }
+
+export default RoleRepository;
