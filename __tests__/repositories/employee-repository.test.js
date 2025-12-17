@@ -76,4 +76,6 @@ describe("Employee repository", () => {
       expect(foundEmployee).to.be.null;
     });
   });
+
+  // faltan getByDepartment, getByDepartmentAndRole y countByDepartment
 });
