@@ -6,3 +6,5 @@ class Department {
     this.name = name;
   }
 }
+
+export default Department;

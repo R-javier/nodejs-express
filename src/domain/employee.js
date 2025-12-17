@@ -10,3 +10,5 @@ class Employee {
     this.department = department;
   }
 }
+
+export default Employee;

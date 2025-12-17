@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
-import DepartmentRepository from "../../src/repositories/department-repository.js";
+import EmployeeRepository from "../../src/repositories/employees-repository.js";
 
 describe("Employee repository", () => {
   let repository;
@@ -76,4 +76,6 @@ describe("Employee repository", () => {
       expect(foundEmployee).to.be.null;
     });
   });
+
+  // faltan getByDepartment, getByDepartmentAndRole y countByDepartment
 });

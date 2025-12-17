@@ -6,3 +6,5 @@ class Role {
     this.name = name;
   }
 }
+
+export default Role;
