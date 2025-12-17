@@ -1,3 +1,5 @@
+import TABLES from "../config/tables.js";
+
 class DepartmentRepository {
   constructor(db) {
     this.db = db;
@@ -8,21 +10,22 @@ class DepartmentRepository {
       `INSERT INTO ${TABLES.DEPARTMENTS} (id, name) VALUES ($1, $2)`,
       [departmentData.id, departmentData.name],
     );
-    return result.insertId;
+    return result.rows;
   }
   async getAll() {
     return await this.db.query(`SELECT * FROM ${TABLES.DEPARTMENTS}`);
   }
 
   async getById(id) {
-    return await this.db.query(
+    const result = await this.db.query(
       `SELECT * FROM ${TABLES.DEPARTMENTS} WHERE id = $1`,
       [id],
     );
+    return result.rows[0] ?? null;
   }
 
   async delete(id) {
-    return await this.db.query(
+    const result = await this.db.query(
       `
       DELETE FROM ${TABLES.DEPARTMENTS} 
       WHERE id = $1 
@@ -30,6 +33,7 @@ class DepartmentRepository {
     `,
       [id],
     );
+    return result.rows[0];
   }
 }
 

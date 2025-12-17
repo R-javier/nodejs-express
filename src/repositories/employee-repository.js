@@ -1,3 +1,5 @@
+import TABLES from "../config/tables.js";
+
 class EmployeeRepository {
   constructor(db) {
     this.db = db;
@@ -5,44 +7,81 @@ class EmployeeRepository {
 
   async create(employeeData) {
     const result = await this.db.query(
-      `INSERT INTO ${TABLES.EMPLOYEES} (id, name, last_name, birthday, role_id, department_id) VALUES ($1, $2, $3, $4, $5, $6)`,
+      `
+    INSERT INTO ${TABLES.EMPLOYEES}
+      (id, name, last_name, birth_date, role_id, department_id)
+    SELECT
+      $1,
+      $2,
+      $3,
+      $4,
+      r.id,
+      d.id
+    FROM ${TABLES.ROLES} r
+    JOIN ${TABLES.DEPARTMENTS} d
+      ON d.name = $6
+    WHERE r.name = $5
+    RETURNING *
+    `,
       [
         employeeData.id,
         employeeData.name,
         employeeData.lastName,
-        employeeData.birthday,
-        employeeData.roleId,
-        employeeData.departmentId,
+        employeeData.birth_date,
+        employeeData.role,
+        employeeData.department,
       ],
     );
-    return result.insertId;
+    return result.rows[0];
   }
   async getAll() {
     return await this.db.query(`SELECT * FROM ${TABLES.EMPLOYEES}`);
   }
 
   async getById(id) {
-    return await this.db.query(
-      `SELECT * FROM ${TABLES.EMPLOYEES} WHERE id = $1`,
+    const result = await this.db.query(
+      `
+    SELECT 
+      e.*,
+      r.name AS role,
+      d.name AS department
+    FROM ${TABLES.EMPLOYEES} e
+    JOIN ${TABLES.ROLES} r ON e.role_id = r.id
+    JOIN ${TABLES.DEPARTMENTS} d ON e.department_id = d.id
+    WHERE e.id = $1
+    `,
       [id],
     );
+
+    return result.rows[0] ?? null;
   }
   async getByDepartment(departmentName) {
-    return await this.db.query(
+    const result = await this.db.query(
       `
-    SELECT e.*
+    SELECT
+      e.*,
+      r.name AS role,
+      d.name AS department
     FROM ${TABLES.EMPLOYEES} e
     JOIN ${TABLES.DEPARTMENTS} d
       ON e.department_id = d.id
+    JOIN ${TABLES.ROLES} r
+      ON e.role_id = r.id
     WHERE d.name = $1
     `,
       [departmentName],
     );
+
+    return result.rows;
   }
+
   async getByDepartmentAndRole(departmentName, roleName) {
-    return await this.db.query(
+    const result = await this.db.query(
       `
-    SELECT e.*
+    SELECT
+      e.*,
+      r.name AS role,
+      d.name AS department
     FROM ${TABLES.EMPLOYEES} e
     JOIN ${TABLES.DEPARTMENTS} d
       ON e.department_id = d.id
@@ -53,10 +92,12 @@ class EmployeeRepository {
     `,
       [departmentName, roleName],
     );
+
+    return result.rows;
   }
 
   async countByDepartment(departmentName) {
-    return await this.db.query(
+    const result = await this.db.query(
       `
     SELECT COUNT(*) AS total
     FROM ${TABLES.EMPLOYEES} e
@@ -66,6 +107,8 @@ class EmployeeRepository {
     `,
       [departmentName],
     );
+
+    return Number(result.rows[0].total);
   }
 
   async updateRole(employeeId, roleName) {
@@ -81,7 +124,7 @@ class EmployeeRepository {
     );
   }
   async delete(id) {
-    return await this.db.query(
+    const result = await this.db.query(
       `
       DELETE FROM ${TABLES.EMPLOYEES} 
       WHERE id = $1 
@@ -89,6 +132,8 @@ class EmployeeRepository {
     `,
       [id],
     );
+
+    return result.rows[0] ?? null;
   }
 }
 

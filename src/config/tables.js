@@ -3,3 +3,5 @@ const TABLES = {
   ROLES: process.env.TABLE_ROLES || "roles",
   DEPARTMENTS: process.env.TABLE_DEPARTMENTS || "departments",
 };
+
+export default TABLES;

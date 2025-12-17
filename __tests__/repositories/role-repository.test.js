@@ -1,3 +1,5 @@
+process.env.NODE_ENV = "test";
+
 import { expect } from "chai";
 import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
@@ -8,7 +10,7 @@ describe("Role repository", () => {
   let roleData;
   let id;
 
-  before(() => {
+  beforeEach(() => {
     id = uuidv4();
     repository = new RolesRepository(pool);
     roleData = {
@@ -47,7 +49,7 @@ describe("Role repository", () => {
       await repository.create(roleData);
 
       await repository.delete(id);
-      const foundRole = await repository.findById(id);
+      const foundRole = await repository.getById(id);
       expect(foundRole).to.be.null;
     });
   });

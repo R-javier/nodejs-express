@@ -1,4 +1,5 @@
 {
+  "import": ["./__tests__/setup.js"],
   "require": ["dotenv/config"],
   "timeout": 5000,
   "exit": true
