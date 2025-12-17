@@ -27,43 +27,57 @@ class EmployeeRepository {
       [id],
     );
   }
-  async getByDepartment(departmentId) {
+  async getByDepartment(departmentName) {
     return await this.db.query(
       `
-      SELECT * FROM ${TABLES.EMPLOYEES} 
-      WHERE department_id = $1
+    SELECT e.*
+    FROM ${TABLES.EMPLOYEES} e
+    JOIN ${TABLES.DEPARTMENTS} d
+      ON e.department_id = d.id
+    WHERE d.name = $1
     `,
-      [departmentId],
+      [departmentName],
     );
   }
-  async getByDepartmentAndRole(departmentId, roleId) {
+  async getByDepartmentAndRole(departmentName, roleName) {
     return await this.db.query(
       `
-      SELECT * FROM ${TABLES.EMPLOYEES} 
-      WHERE department_id = $1 AND role_id = $2
+    SELECT e.*
+    FROM ${TABLES.EMPLOYEES} e
+    JOIN ${TABLES.DEPARTMENTS} d
+      ON e.department_id = d.id
+    JOIN ${TABLES.ROLES} r
+      ON e.role_id = r.id
+    WHERE d.name = $1
+      AND r.name = $2
     `,
-      [departmentId, roleId],
+      [departmentName, roleName],
     );
   }
 
-  async countByDepartment(departmentId) {
+  async countByDepartment(departmentName) {
     return await this.db.query(
       `
-      SELECT COUNT(*) FROM ${TABLES.EMPLOYEES} 
-      WHERE department_id = $1
+    SELECT COUNT(*) AS total
+    FROM ${TABLES.EMPLOYEES} e
+    JOIN ${TABLES.DEPARTMENTS} d
+      ON e.department_id = d.id
+    WHERE d.name = $1
     `,
-      [departmentId],
+      [departmentName],
     );
   }
 
-  async updateRole(id, rolId) {
+  async updateRole(employeeId, roleName) {
     return await this.db.query(
       `
-      UPDATE ${TABLES.EMPLOYEES} 
-      SET role_id = $1 
-      WHERE id = $2
+    UPDATE ${TABLES.EMPLOYEES} e
+    SET role_id = r.id
+    FROM ${TABLES.ROLES} r
+    WHERE e.id = $1
+      AND r.name = $2
     `,
-      [rolId, id],
+      [employeeId, roleName],
     );
   }
   async delete(id) {

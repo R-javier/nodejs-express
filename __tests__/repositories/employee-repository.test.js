@@ -34,6 +34,12 @@ describe("Employee repository", () => {
     });
   });
 
+  describe("get all employees", () => {
+    it("should return all employees", async () => {
+      const employees = await repository.getAll();
+      expect(employees).to.exist;
+    });
+  });
   describe("find by Id", () => {
     it("should find an employee by id", async () => {
       await repository.create(employeeData);
@@ -41,29 +47,44 @@ describe("Employee repository", () => {
       expect(foundEmployee).to.exist;
     });
   });
-
-  describe("get all employees", () => {
-    it("should return all employees", async () => {
-      const employees = await repository.getAll();
-      expect(employees).to.exist;
+  describe("find by department", () => {
+    it("should return all employees of the given department", async () => {
+      await repository.create(employeeData);
+      const foundEmployees = await repository.getByDepartment(
+        employeeData.department,
+      );
+      expect(foundEmployees).to.exist;
     });
   });
 
-  describe("update", () => {
-    it("should update an existing employee", async () => {
+  describe("find by department and role", () => {
+    it("should return all employees of the given department and role", async () => {
       await repository.create(employeeData);
+      const foundEmployees = await repository.getByDepartmentAndRole(
+        employeeData.department,
+        employeeData.role,
+      );
+      expect(foundEmployees).to.exist;
+    });
+  });
 
-      await repository.update(id, {
-        name: "Marcela",
-        lastName: "Paez",
-        role: "Recursos Humanos",
-        department: "Operaciones",
-      });
+  describe("count by department", () => {
+    it("should return the number of employees in the given department", async () => {
+      const countedEmployees = await repository.countByDepartment(
+        employeeData.department,
+      );
+      expect(countedEmployees).to.be.greaterThan(0);
+    });
+  });
+
+  describe("update role", () => {
+    it("should update the role of an existing employee", async () => {
+      await repository.create(employeeData);
+      const newRole = "Recursos Humanos";
+      await repository.update(id, newRole);
+
       const updated = await repository.findById(id);
-      expect(updated.name).to.equal("Marcela");
-      expect(updated.lastName).to.equal("Paez");
       expect(updated.role).to.equal("Recursos Humanos");
-      expect(updated.department).to.equal("Operaciones");
     });
   });
 
@@ -76,6 +97,4 @@ describe("Employee repository", () => {
       expect(foundEmployee).to.be.null;
     });
   });
-
-  // faltan getByDepartment, getByDepartmentAndRole y countByDepartment
 });

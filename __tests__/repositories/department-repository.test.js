@@ -28,18 +28,18 @@ describe("Department repository", () => {
     });
   });
 
-  describe("find by Id", () => {
-    it("should find a department by id", async () => {
-      await repository.create(departmentData);
-      const foundDepartment = await repository.findById(id);
-      expect(foundDepartment).to.exist;
-    });
-  });
-
   describe("get all departments", () => {
     it("should return all departments", async () => {
       const departments = await repository.getAll();
       expect(departments).to.exist;
+    });
+  });
+
+  describe("get by Id", () => {
+    it("should get a department by id", async () => {
+      await repository.create(departmentData);
+      const foundDepartment = await repository.getById(id);
+      expect(foundDepartment).to.exist;
     });
   });
 
