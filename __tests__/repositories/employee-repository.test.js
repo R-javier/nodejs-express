@@ -1,12 +1,15 @@
 import { expect } from "chai";
+import { v4 as uuidv4 } from "uuid";
+import pool from "../../src/config/database.js";
 import EmployeeRepository from "../../src/repositories/employees-repository.js";
-import { pool } from "../setup";
 
 describe("Employee repository", () => {
   let repository;
   let employeeData;
-  const id = uuidv4();
+  let id;
+
   before(() => {
+    id = uuidv4();
     repository = new EmployeeRepository(pool);
     employeeData = {
       id: id,
@@ -20,20 +23,30 @@ describe("Employee repository", () => {
     };
   });
 
+  after(async () => {
+    await pool.end();
+  });
+
   describe("create", () => {
     it("should create a new employee", async () => {
       const employee = await repository.create(employeeData);
       expect(employee).to.exist;
     });
   });
-  describe("find by Id", async () => {
-    await repository.create(employeeData);
-    const foundEmployee = await repository.findById(id);
-    expect(foundEmployee).to.exist;
+
+  describe("find by Id", () => {
+    it("should find an employee by id", async () => {
+      await repository.create(employeeData);
+      const foundEmployee = await repository.findById(id);
+      expect(foundEmployee).to.exist;
+    });
   });
-  describe("get all employees", async () => {
-    const employees = await repository.getAll();
-    expect(employees).to.exist;
+
+  describe("get all employees", () => {
+    it("should return all employees", async () => {
+      const employees = await repository.getAll();
+      expect(employees).to.exist;
+    });
   });
 
   describe("update", () => {
@@ -43,7 +56,6 @@ describe("Employee repository", () => {
       await repository.update(id, {
         name: "Marcela",
         lastName: "Paez",
-
         role: "Recursos Humanos",
         department: "Operaciones",
       });
@@ -54,6 +66,7 @@ describe("Employee repository", () => {
       expect(updated.department).to.equal("Operaciones");
     });
   });
+
   describe("delete", () => {
     it("should delete the given employee", async () => {
       await repository.create(employeeData);
