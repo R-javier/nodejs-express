@@ -1,3 +1,5 @@
+process.env.NODE_ENV = "test";
+
 import { expect } from "chai";
 import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
@@ -8,7 +10,7 @@ describe("Department repository", () => {
   let departmentData;
   let id;
 
-  before(() => {
+  beforeEach(() => {
     id = uuidv4();
     repository = new DepartmentRepository(pool);
     departmentData = {
@@ -28,18 +30,18 @@ describe("Department repository", () => {
     });
   });
 
-  describe("find by Id", () => {
-    it("should find a department by id", async () => {
-      await repository.create(departmentData);
-      const foundDepartment = await repository.findById(id);
-      expect(foundDepartment).to.exist;
-    });
-  });
-
   describe("get all departments", () => {
     it("should return all departments", async () => {
       const departments = await repository.getAll();
       expect(departments).to.exist;
+    });
+  });
+
+  describe("get by Id", () => {
+    it("should get a department by id", async () => {
+      await repository.create(departmentData);
+      const foundDepartment = await repository.getById(id);
+      expect(foundDepartment).to.exist;
     });
   });
 
@@ -48,7 +50,7 @@ describe("Department repository", () => {
       await repository.create(departmentData);
 
       await repository.delete(id);
-      const foundDepartment = await repository.findById(id);
+      const foundDepartment = await repository.getById(id);
       expect(foundDepartment).to.be.null;
     });
   });
