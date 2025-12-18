@@ -1,0 +1,20 @@
+
+version: "3.8"
+
+services:
+  postgres_test:
+    image: postgres:16-alpine
+    container_name: rrhh_postgres_test
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+      POSTGRES_DB: rrhh_test
+    ports:
+      - "5433:5432"        # uso 5433 para NO chocar con Postgres local
+    volumes:
+      - ./db/test:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d rrhh_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 15

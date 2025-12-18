@@ -1,51 +1,40 @@
 import request from "supertest";
-import { describe, expect, it } from "vitest";
-import app from "../app.js";
 
-describe("Employees API", () => {
-  it("GET /employees", async () => {
-    const res = await request(app).get("/employees");
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-  });
+beforeAll(async () => {
+  process.env.NODE_ENV = "test";
+  process.env.DB_HOST = "localhost";
+  process.env.DB_PORT = "5433";
+  process.env.DB_USER = "test_user";
+  process.env.DB_PASSWORD = "test_pass";
+  process.env.DB_NAME = "rrhh_test";
+
+  app = (await import("../src/server.js")).default;
 });
 
-// import request from "supertest";
-// import { afterEach, beforeAll, describe, expect, it } from "vitest";
-// import app from "../app.js";
+describe("Tests básicos de /employees", () => {
+  it("GET /employees/ responde 200", async () => {
+    const res = await request(app).get("/employees/");
+    expect(res.status).toBe(200);
+  });
 
-// import { cleanDatabase, pool, setupDatabase } from "./setupTestDB.js";
+  it("GET /employees/IT responde 200", async () => {
+    const res = await request(app).get("/employees/IT");
+    expect(res.status).toBe(200);
+  });
 
-// beforeAll(async () => {
-//   await setupDatabase();
-// });
+  it("GET /employees/count/IT responde 200 y tiene { count }", async () => {
+    const res = await request(app).get("/employees/count/IT");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("count");
+    expect(typeof res.body.count).toBe("number");
+  });
 
-// afterEach(async () => {
-//   await cleanDatabase();
-// });
-
-// describe("GET /employees", () => {
-//   it("debería devolver una lista de empleados", async () => {
-//     // insertamos datos de prueba
-//     await pool.query(`
-//       INSERT INTO roles (nombre) VALUES ('Analista');
-//       INSERT INTO departamentos (nombre) VALUES ('IT');
-
-//       INSERT INTO empleados
-//       (nombre, apellido, fecha_nacimiento, rol_id, departamento_id)
-//       VALUES (
-//         'Juan',
-//         'Perez',
-//         '1990-01-01',
-//         (SELECT id FROM roles LIMIT 1),
-//         (SELECT id FROM departamentos LIMIT 1)
-//       );
-//     `);
-
-//     const res = await request(app).get("/employees");
-
-//     expect(res.status).toBe(200);
-//     expect(res.body.length).toBe(1);
-//     expect(res.body[0].nombre).toBe("Juan");
-//   });
-// });
+  it.skip("PUT /employees/:id/role/Analista (opcional)", async () => {
+    const all = await request(app)
+      .get("/employees/")
+      .then((r) => r.body);
+    const juan = all.find((e) => e.nombre === "Juan" && e.apellido === "Pérez");
+    const res = await request(app).put(`/employees/${juan.id}/role/Analista`);
+    expect(res.status).toBe(200);
+  });
+});

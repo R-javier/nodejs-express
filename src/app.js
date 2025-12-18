@@ -1,14 +1,26 @@
 import express from "express";
-import { errorHandler } from "./middlewares/errorHandler.js";
-import employeesRoutes from "./routes/employees.routes.js";
+import morgan from "morgan";
+import employeesRouter from "./routes/employees.routes.js";
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
-app.use("/employees", employeesRoutes);
-app.use((req, res) => {
-  res.status(404).json({ error: "Ruta no encontrada" });
+app.use(morgan("dev"));
+app.use("/employees", employeesRouter);
+
+//// Middleware de errores
+app.use((err, req, res, next) => {
+  console.error(err);
+  const status = err.status || 500;
+  res
+    .status(status)
+    .json({ error: err.message || "Error interno del servidor" });
 });
 
-app.use(errorHandler);
-export default app;
+const PORT = Number(process.env.PORT || 3000);
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`API escuchando en http://localhost:${PORT}`);
+  });
+}
