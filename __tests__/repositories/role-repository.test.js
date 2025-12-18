@@ -1,5 +1,3 @@
-process.env.NODE_ENV = "test";
-
 import { expect } from "chai";
 import { v4 as uuidv4 } from "uuid";
 import pool from "../../src/config/database.js";
