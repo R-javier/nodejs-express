@@ -1,23 +1,25 @@
 import express from "express";
 import { Pool } from "pg";
 import "dotenv/config";
-import { parse } from "dotenv";
-import { queries } from "./queries";
+import { queries } from "./queries.js";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
+const isTest = process.env.NODE_ENV === "test";
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: parse.int(process.env.DB_PORT),
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: isTest ? process.env.TEST_DB_HOST : process.env.DB_HOST,
+  port: isTest
+    ? parseInt(process.env.TEST_DB_PORT)
+    : parseInt(process.env.DB_PORT),
+  user: isTest ? process.env.TEST_DB_USER : process.env.DB_USER,
+  password: isTest ? process.env.TEST_DB_PASSWORD : process.env.DB_PASSWORD,
+  database: isTest ? process.env.TEST_DB_NAME : process.env.DB_NAME,
 });
 
 app.use(express.json());
 
-app.get("/employees", async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const data = await pool.query(queries.employees.getAll);
     res.json(data.rows);

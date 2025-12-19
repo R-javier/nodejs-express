@@ -1,7 +1,7 @@
 
 services:
   app_rrhh:
-    image: apijj:1.0
+    image: api-jj:julen_version
     container_name: app_rrhh
     ports:
       - 3000:3000
@@ -12,9 +12,26 @@ services:
       DB_PORT: 5432
       DB_USER: admin
       DB_PASSWORD: password
-      DB_NAME: rrhh-db=value
-      PORT : 3000
-      NODE_ENV : development
+      DB_NAME: rrhh-db
+      PORT: 3000
+    develop:
+      watch:
+        - action: sync
+          path: ./
+          target: /app
+          ignore:
+            - node_modules/
+
+        - action: sync
+          path: ./index.js
+          target: /app/index.js
+        
+        - action: sync
+          path: ./queries.js
+          target: /app/queries.js
+        
+        - action: rebuild
+          path: ./package.json 
     depends_on:
       - db
   db:
@@ -28,8 +45,20 @@ services:
       POSTGRES_DB: rrhh-db
     volumes:
       - pg-data:/var/lib/postgresql
-
+  test-db:
+    image: postgres
+    container_name: test_postgres
+    ports: 
+    - 5430:5432
+    environment:
+      POSTGRES_USER: testadmin
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: test-db
+    volumes:
+      - test-data:/var/lib/postgresql
 volumes:
-  pg-data:
+  pg-data:  
+    driver: local
+  test-data:
     driver: local
     
